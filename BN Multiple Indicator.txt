@@ -314,6 +314,8 @@ colSupport = dir == -1 and dir == dir[1] ? color.new(color.green, 0) : color.new
 // fill(hPlot, upPlot, color=longFill)
 // fill(hPlot, dnPlot, color=shortFill)
 
+barcolor(dir == 1 ? color.red : color.green)
+
 //Plot Buy Signal
 buySignal =  dir == -1 and dir[1] == 1
 plotshape(buySignal ? superTrend : na, title="UpTrend Begins", location=location.absolute, style=shape.triangleup, size=size.tiny, color=color.green)
