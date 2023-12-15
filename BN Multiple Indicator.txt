@@ -1,0 +1,508 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+
+//@version=5
+indicator(title="BN Multiple Combined Script", shorttitle = "BN MCS", overlay=true)
+
+TF1 = input.timeframe("3",title="Trade Entry Tf1")
+TF2 = input.timeframe("15",title="Higher Tf2")
+TF3 = input("60",title="Higher Tf3")
+
+///// -- Table Inputs
+max    = input.int(120,'Maximum Length',minval=2)
+min    = input.int(10 ,'Minimum Length',minval=2)
+
+
+dash_loc = input.session("Bottom Left","Bank Dashboard Location"  ,options=["Top Right","Bottom Right","Top Left","Bottom Left", "Middle Right","Bottom Center"]  ,group='Style Settings')
+
+text_size = input.session('Tiny',"Dashboard Size"  ,options=["Tiny","Small","Normal","Large"]  ,group='Style Settings')
+
+cell_up = input(#4caf50,'Bullish Cell Color'  ,group='Style Settings')
+cell_dn = input(#FF5252,'Bearish Cell Color'  ,group='Style Settings')
+cell_netural = input(color.gray,'Neutral Cell Color'  ,group='Style Settings')
+txt_col = input(color.black,'Text/Frame Color'  ,group='Style Settings')
+cell_transp = input.int(50,'Cell Transparency'  ,minval=0  ,maxval=100  ,group='Style Settings')
+  
+//----
+
+
+//////////////////
+tUS = input.symbol("CURRENCYCOM:US30","TickerUS")
+[tsUS,tsUSC1] = request.security(tUS,'D',[close,close[1]])
+tsUSTF1 = request.security(tUS,TF1,close[1]) 
+tsUSTF2 = request.security(tUS,TF2,close[1]) 
+tsUSTF3 = request.security(tUS,TF3,close[1]) 
+tsUSChng = (tsUS-tsUSC1)
+tsUSp = (tsUS-tsUSC1)*100/tsUSC1
+tsUS1 = (tsUS-tsUSTF1)*100/tsUSTF1
+tsUS2 = (tsUS-tsUSTF2)*100/tsUSTF2
+tsUS3 = (tsUS-tsUSC1)*100/tsUSTF3
+
+
+cdow = tsUSp >= 0 ? cell_up : cell_dn
+// cdow = color.from_gradient(tsUSp,-10,10,cell_dn,cell_up)
+cdow1 = tsUS1 >= 0 ? cell_up : cell_dn
+cdow2 = tsUS2 >= 0 ? cell_up : cell_dn
+cdow3 = tsUS3 >= 0 ? cell_up : cell_dn
+
+
+// Vix
+indvixin = input.symbol("NSE:INDIAVIX","Ticker Vix" )
+[indvix,indvixC] = request.security(indvixin,'D',[close,close[1]])
+indvixTF1 = request.security(indvixin,TF1,close[1]) 
+indvixTF2 = request.security(indvixin,TF2,close[1]) 
+indvixTF3 = request.security(indvixin,TF3,close[1]) 
+
+indvixChng = (indvix-indvixC)
+indvixp = (indvix - indvixC)*100/indvixC
+indvix1 = (indvix - indvixTF1)*100/indvixTF1
+indvix2 = (indvix - indvixTF2)*100/indvixTF2
+indvix3 = (indvix - indvixTF3)*100/indvixTF3
+
+
+cvix = indvixp >= 0 ? cell_up : cell_dn
+
+// textVix = 'VIX :' +str.tostring(indvix)+'  ' +str.tostring(truncate((indvix - indvixC),3)) +'  (' + str.tostring(truncate(indvixp,2)) +'%)'
+
+
+//
+t1 = input.symbol("NSE:HDFCBANK","Ticker1")
+t2 = input.symbol("NSE:ICICIBANK" , "Ticker2")
+t3 = input.symbol("NSE:KOTAKBANK", "Ticker3")
+t4 = input.symbol("NSE:SBIN", "Ticker4")
+t5 = input.symbol("NSE:AXISBANK" , "Ticker5")
+t6 = input.symbol("NSE:INDUSINDBK" , "Ticker6")
+t7 = input.symbol("NSE:AUBANK" , "Ticker7")
+t8 = input.symbol("NSE:BANDHANBNK" , "Ticker8")
+// t9 = input.symbol("NSE:PNB",   "Ticker9")
+// t10 = input.symbol("NSE:FEDERALBNK" , "Ticker10")
+// t11 = input.symbol("NSE:RBLBANK", "Ticker11")
+// t12 = input.symbol("NSE:YESBANK", "Ticker12")
+
+[ts1,ts1C] = request.security(t1,'D',[close,close[1]])
+ts1TF1 = request.security(t1,TF1,close[1]) 
+ts1TF2 = request.security(t1,TF2,close[1]) 
+ts1TF3 = request.security(t1,TF3,close[1]) 
+
+ts1Chng = (ts1-ts1C)
+ts1p = (ts1-ts1C)*100/ts1C
+ts1p1 = (ts1 - ts1TF1)*100/ts1TF1
+ts1p2 = (ts1 - ts1TF2)*100/ts1TF2
+ts1p3 = (ts1 - ts1TF3)*100/ts1TF3
+
+//------------------
+[ts2,ts2C] = request.security(t2,'D',[close,close[1]])
+ts2TF1 = request.security(t2,TF1,close[1]) 
+ts2TF2 = request.security(t2,TF2,close[1]) 
+ts2TF3 = request.security(t2,TF3,close[1]) 
+
+ts2Chng = (ts2-ts2C)
+ts2p = (ts2-ts2C)*100/ts2C
+ts2p1 = (ts2 - ts2TF1)*100/ts2TF1
+ts2p2 = (ts2 - ts2TF2)*100/ts2TF2
+ts2p3 = (ts2 - ts2TF3)*100/ts2TF3
+
+//---------------
+[ts3,ts3C] = request.security(t3,'D',[close,close[1]])
+ts3TF1 = request.security(t3,TF1,close[1]) 
+ts3TF2 = request.security(t3,TF2,close[1]) 
+ts3TF3 = request.security(t3,TF3,close[1]) 
+
+ts3Chng = (ts3-ts3C)
+ts3p = (ts3-ts3C)*100/ts3C
+ts3p1 = (ts3 - ts3TF1)*100/ts3TF1
+ts3p2 = (ts3 - ts3TF2)*100/ts3TF2
+ts3p3 = (ts3 - ts3TF3)*100/ts3TF3
+
+
+//----------------
+[ts4,ts4C] = request.security(t4,'D',[close,close[1]])
+ts4TF1 = request.security(t4,TF1,close[1]) 
+ts4TF2 = request.security(t4,TF2,close[1]) 
+ts4TF3 = request.security(t4,TF3,close[1]) 
+
+ts4Chng = (ts4-ts4C)
+ts4p = (ts4-ts4C)*100/ts4C
+ts4p1 = (ts4 - ts4TF1)*100/ts4TF1
+ts4p2 = (ts4 - ts4TF2)*100/ts4TF2
+ts4p3 = (ts4 - ts4TF3)*100/ts4TF3
+
+[ts5,ts5C] = request.security(t5,'D',[close,close[1]])
+ts5TF1 = request.security(t5,TF1,close[1]) 
+ts5TF2 = request.security(t5,TF2,close[1]) 
+ts5TF3 = request.security(t5,TF3,close[1]) 
+
+ts5Chng = (ts5-ts5C)
+ts5p = (ts5-ts5C)*100/ts5C
+ts5p1 = (ts5 - ts5TF1)*100/ts5TF1
+ts5p2 = (ts5 - ts5TF2)*100/ts5TF2
+ts5p3 = (ts5 - ts5TF3)*100/ts5TF3
+
+[ts6,ts6C] = request.security(t6,'D',[close,close[1]])
+// ts6C = request.security(t6,'D',close[1])
+ts6TF1 = request.security(t6,TF1,close[1]) 
+ts6TF2 = request.security(t6,TF2,close[1]) 
+ts6TF3 = request.security(t6,TF3,close[1]) 
+
+ts6Chng = (ts6-ts6C)
+ts6p = (ts6-ts6C)*100/ts6C
+ts6p1 = (ts6 - ts6TF1)*100/ts6TF1
+ts6p2 = (ts6 - ts6TF2)*100/ts6TF2
+ts6p3 = (ts6 - ts6TF3)*100/ts6TF3
+
+
+[ts7,ts7C] = request.security(t7,'D',[close,close[1]])
+ts7TF1 = request.security(t7,TF1,close[1]) 
+ts7TF2 = request.security(t7,TF2,close[1]) 
+ts7TF3 = request.security(t6,TF3,close[1]) 
+
+ts7Chng = (ts7-ts7C)
+ts7p = (ts7-ts7C)*100/ts7C
+ts7p1 = (ts7 - ts7TF1)*100/ts7TF1
+ts7p2 = (ts7 - ts7TF2)*100/ts7TF2
+ts7p3 = (ts6 - ts6TF3)*100/ts6TF3
+
+[ts8,ts8C] = request.security(t8,'D',[close,close[1]])
+ts8TF1 = request.security(t8,TF1,close[1]) 
+ts8TF2 = request.security(t8,TF2,close[1]) 
+ts8TF3 = request.security(t6,TF3,close[1]) 
+
+ts8Chng = (ts8-ts8C)
+ts8p = (ts8-ts8C)*100/ts8C
+ts8p1 = (ts8 - ts8TF1)*100/ts8TF1
+ts8p2 = (ts8 - ts8TF2)*100/ts8TF2
+ts8p3 = (ts6 - ts6TF3)*100/ts6TF3
+
+/// -------------- Table Start -------------------
+
+
+var table_position = dash_loc == 'Top Left' ? position.top_left :
+  dash_loc == 'Bottom Left' ? position.bottom_left :
+  dash_loc == 'Middle Right' ? position.middle_right :
+  dash_loc == 'Bottom Center' ? position.bottom_center :
+  dash_loc == 'Top Right' ? position.top_right : position.bottom_right
+  
+var table_text_size = text_size == 'Tiny' ? size.tiny :
+  text_size == 'Small' ? size.small :
+  text_size == 'Normal' ? size.normal : size.large
+
+var t = table.new(table_position,8,math.abs(max-min)+2,
+  frame_color=txt_col,
+  frame_width=1,
+  border_color=txt_col,
+  border_width=1)
+
+if (barstate.islast)    
+
+    table.cell(t,1,0,'Symbol',text_color=txt_col,text_size=table_text_size)
+    table.cell(t,2,0,'LTP',text_color=txt_col,text_size=table_text_size)
+    table.cell(t,3,0,'Chng',text_color=txt_col,text_size=table_text_size)
+    table.cell(t,4,0,'%Chng',text_color=txt_col,text_size=table_text_size)
+    table.cell(t,5,0, TF1 ,text_color=txt_col,text_size=table_text_size)
+    table.cell(t,6,0, TF2 ,text_color=txt_col,text_size=table_text_size)
+    table.cell(t,7,0, TF3 ,text_color=txt_col,text_size=table_text_size)
+    // Dow
+    table.cell(t,1,1,'Dow',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,1, str.tostring(tsUS) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(cdow,cell_transp))
+    table.cell(t,3,1, str.tostring(tsUSChng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(cdow,cell_transp))
+    table.cell(t,4,1, str.tostring(tsUSp, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(cdow,cell_transp))
+    table.cell(t,5,1, str.tostring(tsUS1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(cdow1,cell_transp))
+    table.cell(t,6,1, str.tostring(tsUS2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(cdow2,cell_transp))
+    table.cell(t,7,1, str.tostring(tsUS3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(cdow3,cell_transp))
+    // Vix
+    table.cell(t,1,2, str.replace_all(indvixin, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,2, str.tostring(indvix) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(indvixp >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,2, str.tostring(indvixChng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(indvixp >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,2, str.tostring(indvixp, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(indvixp >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,2, str.tostring(indvix1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(indvix1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,2, str.tostring(indvix2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(indvix2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,2, str.tostring(indvix3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(indvix3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 1
+    table.cell(t,1,3, str.replace_all(t1, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,3, str.tostring(ts1) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts1p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,3, str.tostring(ts1Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts1p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,3, str.tostring(ts1p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts1p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,3, str.tostring(ts1p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts1p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,3, str.tostring(ts1p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts1p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,3, str.tostring(ts1p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts1p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 2
+    table.cell(t,1,4, str.replace_all(t2, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,4, str.tostring(ts2) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts2p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,4, str.tostring(ts2Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts2p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,4, str.tostring(ts2p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts2p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,4, str.tostring(ts2p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts2p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,4, str.tostring(ts2p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts2p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,4, str.tostring(ts2p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts2p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 3
+    table.cell(t,1,5, str.replace_all(t3, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,5, str.tostring(ts3) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts3p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,5, str.tostring(ts3Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts3p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,5, str.tostring(ts3p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts3p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,5, str.tostring(ts3p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts3p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,5, str.tostring(ts3p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts3p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,5, str.tostring(ts3p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts3p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 4
+    table.cell(t,1,6, str.replace_all(t4, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,6, str.tostring(ts4) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts4p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,6, str.tostring(ts4Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts4p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,6, str.tostring(ts4p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts4p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,6, str.tostring(ts4p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts4p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,6, str.tostring(ts4p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts4p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,6, str.tostring(ts4p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts4p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 5
+    table.cell(t,1,7, str.replace_all(t5, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,7, str.tostring(ts5) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts5p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,7, str.tostring(ts5Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts5p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,7, str.tostring(ts5p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts5p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,7, str.tostring(ts5p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts5p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,7, str.tostring(ts5p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts5p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,7, str.tostring(ts5p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts5p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 6
+    table.cell(t,1,8, str.replace_all(t6, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,8, str.tostring(ts6) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts6p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,8, str.tostring(ts6Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts6p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,8, str.tostring(ts6p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts6p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,8, str.tostring(ts6p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts6p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,8, str.tostring(ts6p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts6p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,8, str.tostring(ts6p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts6p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 7
+    table.cell(t,1,9, str.replace_all(t7, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,9, str.tostring(ts7) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts7p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,9, str.tostring(ts7Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts7p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,9, str.tostring(ts7p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts7p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,9, str.tostring(ts7p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts7p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,9, str.tostring(ts7p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts7p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,9, str.tostring(ts7p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts7p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 8
+    table.cell(t,1,10, str.replace_all(t8, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(t,2,10, str.tostring(ts8) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,3,10, str.tostring(ts8Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,4,10, str.tostring(ts8p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    table.cell(t,5,10, str.tostring(ts8p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,6,10, str.tostring(ts8p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    table.cell(t,7,10, str.tostring(ts8p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // 9
+    // table.cell(t,1,10, str.replace_all(t9, 'NSE:', ''),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    // table.cell(t,2,10, str.tostring(ts9) ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p >= 0 ? cell_up : cell_dn ,cell_transp))
+    // table.cell(t,3,10, str.tostring(ts9Chng),text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p >= 0 ? cell_up : cell_dn ,cell_transp))
+    // table.cell(t,4,10, str.tostring(ts9p, '#.##') +'%',text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p >= 0 ? cell_up : cell_dn ,cell_transp) )
+    // table.cell(t,5,10, str.tostring(ts9p1, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p1 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // table.cell(t,6,10, str.tostring(ts9p2, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts8p2 >= 0 ? cell_up : cell_dn ,cell_transp))
+    // table.cell(t,7,8, str.tostring(ts9p3, '#.##') +'%' ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new(ts9p3 >= 0 ? cell_up : cell_dn ,cell_transp))
+    
+//========== Indicators Logic
+
+ShowEma = input(false, "──── Show EMA ─────")
+LenEma = input.int(defval=20)
+EMA = ta.ema(close, LenEma)
+// rsi = rsi(close, 14)
+plot(ShowEma?EMA:na, title="EMA", style=plot.style_line, color=color.orange)
+
+// study("Supertrend", overlay=true)
+ShowSuperTrend = input(true, "──── Show SuperTrend Indicator ─────")
+highlighting = input.bool(title="Show HIghlights",  defval=false)
+len = input.int( defval=10)
+mult = input.int( defval=2)
+[superTrend, dir] = ta.supertrend(mult, len)
+colResistance = dir == 1 and dir == dir[1] ? color.new(color.red, 0) : color.new(color.red, 100)
+colSupport = dir == -1 and dir == dir[1] ? color.new(color.green, 0) : color.new(color.green, 100)
+
+// upPlot = plot(ShowSuperTrend?superTrend:na, color = colSupport, linewidth=1)
+// dnPlot = plot(ShowSuperTrend?superTrend:na , color = colResistance, linewidth=1)
+// hPlot = plot(ohlc4, title="", style=plot.style_circles, linewidth=0, editable = false)
+// longFill = highlighting ? (dir == -1 ? color.new(color.green, 20) : na) : na
+// shortFill = highlighting ? (dir == 1 ? color.new(color.red, 20) : na ) : na
+// fill(hPlot, upPlot, color=longFill)
+// fill(hPlot, dnPlot, color=shortFill)
+
+//Plot Buy Signal
+buySignal =  dir == -1 and dir[1] == 1
+plotshape(buySignal ? superTrend : na, title="UpTrend Begins", location=location.absolute, style=shape.triangleup, size=size.tiny, color=color.green)
+plotshape(buySignal ? superTrend : na, title="BUY", text="BUY", location=location.absolute, style=shape.labelup, size=size.tiny, color=color.green, textcolor=color.white)
+
+//Plot Sell Signal
+sellSignal = dir == 1 and dir[1] == -1
+plotshape(sellSignal ? superTrend : na, title="DownTrend Begins", location=location.absolute, style=shape.triangledown, size=size.tiny, color=color.red)
+plotshape(sellSignal ? superTrend : na, title="SELL", text="SELL", location=location.absolute, style=shape.labeldown, size=size.tiny, color=color.red, textcolor=color.white)
+
+// === Volume ===
+ShowHighVolume = input(true, 'Show Strong Volume ')
+Averageval1 = input.int(title='Average Volume BankNifty: (in K)', defval=40, minval=1)
+Averageval2 = input.int(title='Average Volume Nifty: (in K)', defval=100, minval=1)
+
+Averageval = syminfo.ticker == 'BANKNIFTY1!' ? Averageval1 * 1000 : syminfo.ticker == 'NIFTY1!' ? Averageval2 * 1000 : ta.sma(volume, 20)
+// plotshape(varstrong,style=shape.square, location=location.bottom, color=color.blue)
+
+
+/// Marking bull bear
+Bull = close >= open and volume >= Averageval
+colB = close > ta.vwap ? color.green : color.yellow
+plotshape(ShowHighVolume ? Bull : na, title='Bull', style=shape.triangleup, location=location.bottom, color=colB)
+
+
+
+Bear = close <= open and volume >= Averageval
+colR = close < ta.vwap ? color.red : color.yellow
+plotshape(ShowHighVolume ? Bear : na, title='Bear', style=shape.triangledown, location=location.bottom, color=colR)
+
+//VWAP 
+
+showVwap = input(true, "────Show VWAP ─────")
+VWAP = ta.vwap
+plot(showVwap?VWAP :na,title="VWAP", linewidth=1)
+
+
+//RSI
+rsiPeriod = input.int(title="RSI Period", defval=14, minval=2, maxval=365 , group='RSI' )
+RSI = ta.rsi(close, rsiPeriod)
+rsitxt =  RSI > 50 ? 'UP' : 'Down'
+
+//
+mfiPeriod = input.int(title="MFI Period", defval=10, minval=2, maxval=365)
+MFI = ta.mfi(hlc3,mfiPeriod)
+MFItxt =  MFI > 50 ? 'UP' : 'Down'
+//ADX-DMI
+
+dmiPeriod = input.int(title="DMI Period", defval=13, minval=2, maxval=365, group='ADX')
+dmiSmoothing = input.int(title="+/-DMI Smoothing", defval=8, minval=2, maxval=365, group='ADX')
+[diplus, diminus, adx] = ta.dmi(dmiPeriod, dmiSmoothing)
+
+f_col_adx(diplus,diminus,adx) => 
+    var ADXColor = color.white
+    var ADXText = ''
+    var DI1Color = color.white
+    var DI1Text = ''
+    var DI2Color = color.white
+    var DI2Text = '' 
+    
+    if adx >= 25 and diplus > diminus
+        ADXColor:= color.new( cell_up ,cell_transp)
+        ADXText:= 'Strong UP'
+    else if adx >= 25 and diplus < diminus
+        ADXColor:= color.new( cell_dn ,cell_transp)
+        ADXText:= 'Strong Down'
+    else if adx < 25 and adx >= 20 and diplus > diminus
+        ADXColor:= color.new( color.orange ,cell_transp)
+        ADXText:= 'UP'
+    else if adx < 25 and adx >= 20 and diplus < diminus
+        ADXColor:= color.new( color.orange ,cell_transp)
+        ADXText:= 'Down'    
+    else if adx < 20 and adx > 15
+        ADXColor:= color.new( cell_netural ,cell_transp) 
+        ADXText:= 'Neutral' 
+    else if adx <= 15     
+        ADXColor:= color.new( cell_netural ,cell_transp) 
+        ADXText:= 'Neutral' 
+
+    if diplus >= 25 and diplus > diminus
+        DI1Color:= color.new( cell_up ,cell_transp)
+        DI1Text:= 'UP'
+    else
+        DI1Color:= color.new( cell_netural ,cell_transp) 
+        DI1Text:= '-'
+    
+    if diminus >= 25 and diplus < diminus
+        DI2Color:= color.new( cell_dn ,cell_transp)
+        DI2Text:= 'Down'
+    else
+        DI2Color:= color.new( cell_netural ,cell_transp) 
+        DI2Text:= '-'
+    
+    [ADXColor,ADXText,DI1Color,DI1Text,DI2Color,DI2Text]
+     
+
+[ADXColor,ADXText,DI1Color,DI1Text,DI2Color,DI2Text] = f_col_adx(diplus,diminus,adx)
+
+f_combo(srcInput,LenSma,rsiPeriod,dmiPeriod, dmiSmoothing, mult, len) =>
+    [Sdip,Sdim,Sadx] = ta.dmi(dmiPeriod, dmiSmoothing)
+    [Sst,Sdir] = ta.supertrend(mult, len)
+    Svwap = ta.vwap(srcInput)
+    Sma = ta.ema(srcInput,LenSma)
+    Srsi = ta.rsi(srcInput,rsiPeriod)
+    Svol = volume
+    SAvol = ta.sma(volume,20)
+    [Svwap,Sma,Srsi, Sdip, Sdim, Sadx, Sst, Sdir,Svol,SAvol]
+
+[Svwap1,Sma1,Srsi1,Sdip1,Sdim1,Sadx1, Sst1, Sdir1,Svol1,SAvol1] = request.security(syminfo.tickerid,TF1,f_combo(close,LenEma,rsiPeriod,dmiPeriod, dmiSmoothing ,mult, len))
+[ADXColor1,ADXText1,DI1Color1,DI1Text1,DI2Color1,DI2Text1] = f_col_adx(Sdip1,Sdim1,Sadx1)
+
+[Svwap2,Sma2,Srsi2,Sdip2,Sdim2,Sadx2, Sst2, Sdir2,Svol2,SAvol2] = request.security(syminfo.tickerid,TF2,f_combo(close,LenEma,rsiPeriod,dmiPeriod, dmiSmoothing ,mult, len))
+[ADXColor2,ADXText2,DI1Color2,DI1Text2,DI2Color2,DI2Text2] = f_col_adx(Sdip2,Sdim2,Sadx2)
+
+
+
+//-------------- Table Start -------------------
+
+dash_loc1 = input.session("Bottom Right","Indicator Dashboard Location"  ,options=["Top Right","Bottom Right","Top Left","Bottom Left", "Middle Right","Bottom Center"]  ,group='Indicator Table Settings')
+
+var table_position1 = dash_loc1 == 'Top Left' ? position.top_left :
+  dash_loc1 == 'Bottom Left' ? position.bottom_left :
+  dash_loc1 == 'Middle Right' ? position.middle_right :
+  dash_loc1 == 'Bottom Center' ? position.bottom_center :
+  dash_loc1 == 'Top Right' ? position.top_right : position.bottom_right
+  
+
+var tb1 = table.new(table_position1,8,math.abs(max-min)+2,
+  frame_color=txt_col,
+  frame_width=1,
+  border_color=txt_col,
+  border_width=1)
+
+if (barstate.islast)    
+    table.cell(tb1,1,0,'Indicator',text_color=txt_col,text_size=table_text_size)
+    table.cell(tb1,2,0,'Value',text_color=txt_col,text_size=table_text_size)
+    table.cell(tb1,3,0,'Trend' ,text_color=txt_col,text_size=table_text_size)
+    table.cell(tb1,4,0, TF1 ,text_color=txt_col,text_size=table_text_size)
+    table.cell(tb1,5,0, TF2 ,text_color=txt_col,text_size=table_text_size)
+    //
+    
+    table.cell(tb1,1,1,'Vwap',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,1,str.tostring(VWAP, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > VWAP ? cell_up : cell_dn ,cell_transp))
+    vwaptxt = close >VWAP ? 'UP' : 'Down'
+    table.cell(tb1,3,1, vwaptxt ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > VWAP ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,4,1,str.tostring(Svwap1, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > Svwap1 ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,5,1,str.tostring(Svwap2, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > Svwap2 ? cell_up : cell_dn ,cell_transp))
+
+    //VWMA
+    table.cell(tb1,1,2,'EMA '+str.tostring(LenEma),text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,2,str.tostring(EMA, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > EMA ? cell_up : cell_dn ,cell_transp))
+    vwmatxt = close > EMA ? 'UP' : 'Down'
+    table.cell(tb1,3,2, vwmatxt ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > EMA ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,4,2,str.tostring(Sma1, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > Sma1 ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,5,2,str.tostring(Sma2, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > Sma2 ? cell_up : cell_dn ,cell_transp))
+
+    
+   //SuperTrend
+    table.cell(tb1,1,3,'ST',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,3,str.tostring(superTrend, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > superTrend ? cell_up : cell_dn ,cell_transp))
+    STtxt = close > superTrend ? 'UP' : 'Down'
+    table.cell(tb1,3,3, STtxt ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > superTrend ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,4,3,str.tostring(Sst1, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > Sst1 ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,5,3,str.tostring(Sst2, '#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( close > Sst2 ? cell_up : cell_dn ,cell_transp))
+
+    //RSI
+    table.cell(tb1,1,4,'RSI',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,4,str.tostring(RSI, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( RSI > 50 ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,3,4, rsitxt ,text_color=txt_col,text_size=table_text_size, bgcolor=color.new( RSI > 50 ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,4,4,str.tostring(Srsi1, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( Srsi1 > 50 ? cell_up : cell_dn ,cell_transp))
+    table.cell(tb1,5,4,str.tostring(Srsi2, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor=color.new( Srsi2 > 50 ? cell_up : cell_dn ,cell_transp))
+
+    //ADX
+    table.cell(tb1,1,5,'ADX',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,5,str.tostring(adx, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= ADXColor)
+    table.cell(tb1,3,5, ADXText ,text_color=txt_col,text_size=table_text_size, bgcolor=ADXColor)
+    table.cell(tb1,4,5,str.tostring(Sadx1, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= ADXColor1)
+    table.cell(tb1,5,5,str.tostring(Sadx2, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= ADXColor2)
+    
+    //DI+
+    table.cell(tb1,1,6,'DI +',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,6,str.tostring(diplus, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= DI1Color)
+    table.cell(tb1,3,6, DI1Text ,text_color=txt_col,text_size=table_text_size, bgcolor=DI1Color)
+    table.cell(tb1,4,6,str.tostring(Sdip1, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= DI1Color1)
+    table.cell(tb1,5,6,str.tostring(Sdip2, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= DI1Color2)
+
+    //DI-
+    table.cell(tb1,1,7,'DI -',text_color=color.white,text_size=table_text_size,bgcolor=color.black)
+    table.cell(tb1,2,7,str.tostring(diminus, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= DI2Color)
+    table.cell(tb1,3,7, DI2Text ,text_color=txt_col,text_size=table_text_size, bgcolor=DI2Color)
+    table.cell(tb1,4,7,str.tostring(Sdim1, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= DI2Color1)
+    table.cell(tb1,5,7,str.tostring(Sdim2, '#.#'),text_color=txt_col,text_size=table_text_size, bgcolor= DI2Color2)
